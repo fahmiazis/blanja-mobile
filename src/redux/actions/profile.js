@@ -9,5 +9,9 @@ export default {
     getProfile: (token) => ({
         type: 'GET_PROFILE',
         payload: http(token).get(`/profile/`)
+    }),
+    uploadImage: (data, token) => ({
+        type: 'UPLOAD_IMAGE',
+        payload: http(token).patch(`/profile/customer/img`, data)
     })
 }

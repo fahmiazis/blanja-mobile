@@ -13,7 +13,6 @@ class ProfileOptions extends Component {
         this.props.getProfile(this.props.auth.token)
     }
 
-
     render() {
         const {isLoading, data, isError, alertMsg} = this.props.profile
         return (

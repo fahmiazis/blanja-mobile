@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
+import { Text, View, StyleSheet, TouchableOpacity, Image, ScrollView, Platform } from 'react-native'
 import { Input, Item, Switch, DatePicker, Label, Button } from 'native-base'
 import {connect} from 'react-redux'
+import ImagePicker from 'react-native-image-picker'
 
 import profile from '../redux/actions/profile'
+import akun from '../assets/img/akun.png'
 
 class ProfileEdit extends Component {
     constructor(props) {
@@ -18,6 +20,8 @@ class ProfileEdit extends Component {
         switch3: false,
         name:'',
         birthday: '', 
+        picture: null,
+        photo: akun
     };
 
       setDate(newDate) {
@@ -30,40 +34,98 @@ class ProfileEdit extends Component {
         if (data.length > 0) {
             data.map(item => {
                 return (
-                this.setState({ name: item.name, birthday: item.birthday === null ? "Date of Birth": item.birthday })
+                this.setState({ 
+                    name: item.name, 
+                    birthday: item.birthday === null ? "Date of Birth": item.birthday,
+                    picture: item.picture
+                })
                 )})
-            } else if(data.length === undefined){
+            } else if(data === undefined){
                 this.setState({name: '', birthday: 'Date of birth'})
             } else {
                 console.log('get data failed')
             }
         }
 
-    updateProfile = () => {
+    updateProfile = async () => {
         const name = this.state.name
         const birthday = this.state.birthday
         const data = { name, birthday}
-        this.props.editProfile(data, this.props.auth.token)
+        await this.props.editProfile(data, this.props.auth.token)
+        this.props.getProfile(this.props.auth.token)
+    }
+
+    handleChoosePhoto = async () => {
+        const options = {
+          noData: true,
+        }
+        await ImagePicker.launchImageLibrary(options, response => {
+          if (response.uri) {
+            this.setState({ picture: response })
+          }
+        })
+        // const data = new FormData()
+        // const { picture } = this.state
+        // data.append('picture', {
+        //     name: picture.fileName,
+        //     type: picture.type,
+        //     uri: Platform.OS === 'android' ? picture.uri : picture.uri.replace('file://', '')
+        // })
+
+        // const result = this.props.uploadImage(data, this.props.auth.token)
+        // if (result) {
+        //     this.props.getProfile(this.props.auth.token)
+        // }
+      }
+    
+    FormData = (picture, body) => {
+        const data = new FormData()
+
+        data.append('picture', {
+            name: picture.fileName,
+            type: picture.type,
+            uri: Platform.OS === 'android' ? picture.uri : picture.uri.replace('file://', '')
+        })
+
+        // Object.keys(body).forEach(key => {
+        //     data.append(key, body[key])
+        // })
+        
+        return data
+    }
+
+    uploadPhoto = async () => {
+        const result = await this.props.uploadImage(this.FormData(this.state.picture), this.props.auth.token)
+        if (result) {
+            this.props.getProfile(this.props.auth.token)
+        }
     }
 
     componentDidUpdate(){
         console.log(this.state.birthday)
         console.log(this.state.name)
+        console.log(this.state.picture)
     }
 
     render() {
+        const {picture, birthday} = this.state
         return (
+            <ScrollView>
             <View style={style.parent}>
                 <Text style={style.title}>Settings</Text>
                 <View style={style.disCard}>
-                    <Text style={[style.subtitle, style.distance]}>Personal Information</Text>               
+                    <Text style={[style.subtitle, style.distance]}>Personal Information</Text>             
                     <View style={style.form}>
+                        <TouchableOpacity onPress={this.handleChoosePhoto}>
+                            <Image style={style.img} source={picture === null ?  akun : {uri: `http://54.147.40.208:7070/${picture}`|| `${picture.uri}`} }/>
+                        </TouchableOpacity>
+                        <Button style={style.btnimg} onPress={this.uploadPhoto}><Text style={style.textBtnImg}>Save</Text></Button>
                         <Item floatingLabel style={style.input}>
                             <Label style={style.label}>Full Name</Label>
                             <Input value={this.state.name} onChangeText={name=>this.setState({name})} />
                         </Item>
                         <Item style={style.input}>
-                            <Input disabled value={this.state.birthday === 'Date of Birth' ? 'Date of Birth' : this.state.birthday.toString().substr(4, 12)} />
+                            <Input disabled value={this.state.birthday === 'Date of Birth' ? 'Date of Birth' : this.state.birthday.toString().slice(0, 10)} />
                             <DatePicker 
                             defaultDate={new Date(2000, 2, 10)}
                             minimumDate={new Date(1910, 1, 1)}
@@ -106,6 +168,7 @@ class ProfileEdit extends Component {
                     </View>
                 </View>
             </View>
+            </ScrollView>
         );
     }
 }
@@ -117,7 +180,8 @@ const mapStateToProps = state => ({
   
 const mapDispatchToProps = {
     getProfile: profile.getProfile,
-    editProfile: profile.editProfile
+    editProfile: profile.editProfile,
+    uploadImage: profile.uploadImage
   }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileEdit);
@@ -178,4 +242,24 @@ const style = StyleSheet.create({
         color: "white",
         fontSize: 20
     },
+    img: {
+        alignSelf: "center",
+        width: 72,
+        height: 72,
+        borderRadius: 50,
+    },
+    btnimg: {
+        alignSelf: "center",
+        backgroundColor: "rgb(249,249,249)",
+        justifyContent: "center",
+        width: 80,
+        height: 30,
+        borderRadius: 20,
+        borderColor: "rgb(108,108,108)",
+        borderWidth: 0.5,
+        marginVertical: 10
+    },
+    textBtnImg: {
+        color: "rgb(219,48,34)"
+    }
 })

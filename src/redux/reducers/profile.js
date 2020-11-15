@@ -4,6 +4,7 @@ const authState = {
     alertMsg: '',
     isSuccessGet: false,
     isSuccessUpdate: false,
+    isSuccessImage: false,
     data: []
 };
 
@@ -11,6 +12,7 @@ export default (state=authState, action) => {
         switch(action.type){
             case 'GET_PROFILE_PENDING': {
                 return {
+                    ...state,
                     isLoading: true,
                     alertMsg: 'Waiting For data'
                 };
@@ -34,6 +36,7 @@ export default (state=authState, action) => {
             }
             case 'EDIT_PROFILE_PENDING': {
                 return {
+                    ...state,
                     isLoading: true,
                     alertMsg: 'Waiting For send data'
                 };
@@ -52,6 +55,29 @@ export default (state=authState, action) => {
                     ...state,
                     isError: true,
                     alertMsg: 'Failed edit profile'
+                };
+            }
+            case 'UPLOAD_IMAGE_PENDING': {
+                return {
+                    ...state,
+                    isLoading: true,
+                    alertMsg: 'Waiting For send data'
+                };
+            }
+            case 'UPLOAD_IMAGE_FULFILLED': {
+                return {
+                    ...state,
+                    isError: false,
+                    isLoading: false,
+                    alertMsg: 'Success Upload Image',
+                    isSuccessImage: true
+                };
+            }
+            case 'UPLOAD_IMAGE_REJECTED': {
+                return {
+                    ...state,
+                    isError: true,
+                    alertMsg: 'Failed upload image'
                 };
             }
             default: {

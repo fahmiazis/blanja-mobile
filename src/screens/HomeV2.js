@@ -42,7 +42,7 @@ class Home extends Component {
             <ScrollView horizontal>
             {!isLoading && !isError && data.length!==0 && data.map(item => {
                 return(
-            <TouchableOpacity onPress={() => this.gotoDetail(item.id) }>
+            <TouchableOpacity key={item.id} onPress={() => this.gotoDetail(item.id) }>
             <Card style={style.bodyCard}>
                 <Image style={style.imgCard} source={{uri: `http://54.147.40.208:7070/${item.url}`}} />
                 <View style={style.itemCard}>
@@ -69,7 +69,7 @@ class Home extends Component {
             <ScrollView horizontal>
             {!isLoading && !isError && data.length!==0 && data.map(item => {
                 return(
-            <TouchableOpacity onPress={() => this.gotoDetail(item.id) }>
+            <TouchableOpacity key={item.id} onPress={() => this.gotoDetail(item.id) }>
             <Card style={style.bodyCard}>
                 <Image style={style.imgCard} source={{uri: `http://54.147.40.208:7070/${item.url}`}} />
                 <View style={style.itemCard}>
