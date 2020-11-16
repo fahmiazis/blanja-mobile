@@ -94,8 +94,8 @@ class ProfileEdit extends Component {
         return data
     }
 
-    uploadPhoto = async () => {
-        const result = await this.props.uploadImage(this.FormData(this.state.picture), this.props.auth.token)
+    uploadPhoto =  () => {
+        const result = this.props.uploadImage(this.FormData(this.state.picture), this.props.auth.token)
         if (result) {
             this.props.getProfile(this.props.auth.token)
         }

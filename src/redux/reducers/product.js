@@ -9,6 +9,7 @@ export default (state=authState, action) => {
         switch(action.type){
             case 'GET_PRODUCT_PENDING': {
                 return {
+                    ...state,
                     isLoading: true,
                     alertMsg: 'Waiting For data'
                 };

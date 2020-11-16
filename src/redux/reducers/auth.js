@@ -11,6 +11,7 @@ export default (state=authState, action) => {
         switch(action.type){
             case 'AUTH_USER_PENDING': {
                 return {
+                    ...state,
                     isLoading: true,
                     alertMsg: 'Login in ....'
                 };
@@ -34,6 +35,7 @@ export default (state=authState, action) => {
             }
             case 'REGISTER_PENDING': {
                 return {
+                    ...state,
                     isLoading: true,
                     alertMsg: 'Waiting....'
                 };
