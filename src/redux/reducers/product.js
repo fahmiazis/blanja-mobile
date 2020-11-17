@@ -1,11 +1,12 @@
-const authState = {
+const productState = {
     isLoading: false,
     isError: false,
     alertMsg: '',
-    data: []
+    data: [],
+    detail: {}
 };
 
-export default (state=authState, action) => {
+export default (state=productState, action) => {
         switch(action.type){
             case 'GET_PRODUCT_PENDING': {
                 return {
@@ -20,10 +21,33 @@ export default (state=authState, action) => {
                     isError: false,
                     isLoading: false,
                     alertMsg: 'Success get item',
-                    data: action.payload.data.data,
+                    data: action.payload.data,
                 };
             }
             case 'GET_PRODUCT_REJECTED': {
+                return {
+                    ...state,
+                    isError: true,
+                    alertMsg: 'Data not found'
+                };
+            }
+            case 'DETAIL_ITEM_PENDING': {
+                return {
+                    ...state,
+                    isLoading: true,
+                    alertMsg: 'Waiting For data'
+                };
+            }
+            case 'DETAIL_ITEM_FULFILLED': {
+                return {
+                    ...state,
+                    isError: false,
+                    isLoading: false,
+                    alertMsg: 'Success get item',
+                    detail: action.payload.data.data,
+                };
+            }
+            case 'DETAIL_ITEM_REJECTED': {
                 return {
                     ...state,
                     isError: true,

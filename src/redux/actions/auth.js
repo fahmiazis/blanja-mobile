@@ -9,5 +9,8 @@ export default {
     register: (data) => ({
         type: 'REGISTER',
         payload: http().post(`/auth/signup/customer`, qs.stringify(data))
-    })
+    }),
+    logout: () => ({
+        type: 'LOGOUT',
+    }),
 }

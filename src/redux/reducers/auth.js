@@ -56,6 +56,16 @@ export default (state=authState, action) => {
                     alertMsg: action.payload.response.data.message
                 };
             }
+            case 'LOGOUT': {
+                return {
+                    ...state,
+                    isLoading: false,
+                    alertMsg: 'Waiting....',
+                    isLogin: false,
+                    token: '',
+                    alertMsg: 'Logout success'
+                };
+            }
             default: {
                 return state;
             }

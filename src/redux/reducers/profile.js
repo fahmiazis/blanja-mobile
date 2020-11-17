@@ -22,6 +22,8 @@ export default (state=authState, action) => {
                     ...state,
                     isError: false,
                     isLoading: false,
+                    isSuccessImage: false,
+                    isSuccessUpdate: false,
                     alertMsg: 'Success get item',
                     data: action.payload.data.data,
                     isSuccessGet: true

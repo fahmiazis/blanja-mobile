@@ -1,7 +1,9 @@
 import React, {Component} from 'react'
 import { Text, View, StyleSheet, 
-    TouchableOpacity, ScrollView, SafeAreaView, ImageBackground, Image
+    TouchableOpacity, ScrollView, SafeAreaView, 
+    ImageBackground, Image, FlatList
 } from 'react-native'
+import { default as axios} from 'axios'
 import { Card } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
 import {connect} from 'react-redux'
@@ -11,16 +13,65 @@ import product from '../redux/actions/product'
 import head1 from '../assets/img/head1.png'
 
 class Home extends Component {
+    state = {
+        data: {}
+    }
+
     componentDidMount(){
         this.props.getItem()
+        const { data } = this.props.product
+        if (data.length > 0) {
+            this.setState({data: data})
+        }
     }   
     gotoDetail = id => {
+        console.log(id)
         this.props.navigation.navigate('Detail', {id})
+    }
+
+    componentDidUpdate(){
+        console.log(this.state.data)
+    }
+
+    RenderItem = ({product}) => {
+        <TouchableOpacity key={product.id} onPress={() => this.gotoDetail(product.id) }>
+        <Card style={style.bodyCard}>
+                <Image style={style.imgCard} source={{uri: `http://54.147.40.208:7070/${product.url}`}} />
+                <View style={style.itemCard}>
+                <View style={style.card}> 
+                    <Icon name="star-outline" size={15} style={style.rate} />
+                    <Icon name="star-outline" size={15} style={style.rate} />
+                    <Icon name="star-outline" size={15} style={style.rate} />
+                    <Icon name="star-outline" size={15} style={style.rate} />
+                    <Icon name="star-outline" size={15} style={style.rate} />
+                    <Text style={style.rateNumber}>(10)</Text>
+                </View>
+                    <Text style={style.textStore}>Blanja cloth</Text>
+                    <Text>{product.name}</Text>
+                    <Text>Rp{product.price}, -</Text>
+                </View>
+            </Card>
+        </TouchableOpacity>
+    }
+
+    nextPage = async () => {
+        const {data} = this.props.product
+        const data1 = data
+        const { nextLink } = data1.pageInfo
+        if (nextLink) {
+            const res = await axios.get(nextLink)
+            const {data} = res.data
+            const newData = {
+                ...data1,
+                result: [...data1.data, ...data],
+                pageInfo: res.data.pageInfo,
+            }
+            this.setState({data: newData})
+        }
     }
 
   render() {
     const {isLoading, data, isError, alertMsg} = this.props.product
-    console.log(data)
     return (
         <>
         <SafeAreaView>
@@ -35,13 +86,14 @@ class Home extends Component {
                     </View>
                 </View>
                 <View style={style.body}>
-                    <View>
+                <View>
                     <Text style={style.textNew}>New</Text>
                     <Text style={style.textSub} secondary>You've never seen it before</Text>
-                    </View>
-            <ScrollView horizontal>
-            {!isLoading && !isError && data.length!==0 && data.map(item => {
+                </View>
+            
+            {!isLoading && !isError && data.length!==0 && data.data.map(item => {
                 return(
+            <ScrollView horizontal>
             <TouchableOpacity key={item.id} onPress={() => this.gotoDetail(item.id) }>
             <Card style={style.bodyCard}>
                 <Image style={style.imgCard} source={{uri: `http://54.147.40.208:7070/${item.url}`}} />
@@ -60,14 +112,22 @@ class Home extends Component {
                 </View>
             </Card>
             </TouchableOpacity>
-            )})}
+            {/* <View style={style.parent}>
+            <FlatList
+            data = {this.state.data}
+            onEndReached={this.nextPage}
+            onEndReachedThreshold={0.5}
+            renderItem = {({item}) => <this.RenderItem product={item} /> }
+            />
+            </View> */}
             </ScrollView>
-                    <View>
-                        <Text style={style.textNew}>Popular</Text>
-                        <Text style={style.textSub} secondary>You've never seen it before</Text>  
-                    </View>
+            )})}
+            <View>
+                <Text style={style.textNew}>Popular</Text>
+                <Text style={style.textSub} secondary>You've never seen it before</Text>  
+            </View>
             <ScrollView horizontal>
-            {!isLoading && !isError && data.length!==0 && data.map(item => {
+            {!isLoading && !isError && data.length!==0 && data.data.map(item => {
                 return(
             <TouchableOpacity key={item.id} onPress={() => this.gotoDetail(item.id) }>
             <Card style={style.bodyCard}>

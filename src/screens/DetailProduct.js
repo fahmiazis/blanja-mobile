@@ -20,20 +20,28 @@ class DetailProduct extends Component {
         color: 'Color',
     }
 
-    componentDidMount(){
+    componentDidMount() {
+        const {id} = this.props.route.params
+        this.props.detailItem(id)
         this.props.getItem()
-    }   
+    }
+    componentDidUpdate(){
+        const { detail } = this.props.product
+        console.log(detail)
+        console.log(detail.url)
+        console.log(this.state.name)
+        console.log(this.state.price)
+    }
     gotoDetail = id => {
         this.props.navigation.navigate('Detail', {id})
     }
   render() {
-    const {isLoading, data, isError, alertMsg} = this.props.product
+    const {isLoading, data, isError, alertMsg, detail} = this.props.product
     return (
       <View style={style.container}>
           <ScrollView contentInsetAdjustmentBehavior="automatic">
               <ScrollView horizontal>
-              <Image style={style.img} source={det} />
-              <Image style={style.img} source={det2} />
+              <Image style={style.img} source={{uri: `http://54.147.40.208:7070/${detail.url}`}} />
               </ScrollView>
         <View style={style.parent}>
             <View style={style.button}>
@@ -82,8 +90,8 @@ class DetailProduct extends Component {
             </View>
             <View>
                 <View style={style.head}>
-                    <Text style={style.name}>Baju Kuning</Text>
-                    <Text style={style.price}>Rp50.000</Text>
+                    <Text style={style.name}>{detail.name}</Text>
+                    <Text style={style.price}>Rp{detail.price},-</Text>
                 </View>
                 <Text style={style.store}>Blanja Cloth</Text>
                 <View name="rating">
@@ -96,7 +104,7 @@ class DetailProduct extends Component {
                     <Text style={style.rateNumber}>(10)</Text>
                 </View>
                 </View>
-                <Text style={style.description}>Baju kuning yang terbuat dari bahan katun cocok dipakai untuk musim hujan</Text>
+                <Text style={style.description}>{detail.description}</Text>
             </View>
         </View>
         <View style={style.parent}>
@@ -123,7 +131,7 @@ class DetailProduct extends Component {
             </View>
             <View>
             <ScrollView horizontal>
-            {!isLoading && !isError && data.length!==0 && data.map(item => {
+            {!isLoading && !isError && data.length!==0 && data.data.map(item => {
                 return(
             <TouchableOpacity onPress={() => this.gotoDetail(item.id) }>
             <Card style={style.bodyCard}>
@@ -211,6 +219,7 @@ const style = StyleSheet.create({
     head: {
         flexDirection: "row",
         marginTop: "5%",
+        marginRight: 20
     },
     name: {
         fontSize: 25,
@@ -287,8 +296,8 @@ const style = StyleSheet.create({
         marginLeft: 5,
     },
     img: {
-        marginRight: 5,
-        height: 413
+        height: 480,
+        width:480
     },
     imgCard: {
         borderRadius: 10,
@@ -320,11 +329,13 @@ const style = StyleSheet.create({
   });
 
   const mapStateToProps = state => ({
-    product: state.product
+    product: state.product,
+    auth: state.auth
   })
   
   const mapDispatchToProps = {
-    getItem: product.getItem
+    getItem: product.getItem,
+    detailItem: product.detailItem
   }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DetailProduct)

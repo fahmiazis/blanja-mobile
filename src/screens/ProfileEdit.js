@@ -3,8 +3,10 @@ import { Text, View, StyleSheet, TouchableOpacity, Image, ScrollView, Platform }
 import { Input, Item, Switch, DatePicker, Label, Button } from 'native-base'
 import {connect} from 'react-redux'
 import ImagePicker from 'react-native-image-picker'
+import FormData from 'form-data'
 
 import profile from '../redux/actions/profile'
+import auth from '../redux/actions/auth'
 import akun from '../assets/img/akun.png'
 
 class ProfileEdit extends Component {
@@ -59,23 +61,11 @@ class ProfileEdit extends Component {
         const options = {
           noData: true,
         }
-        await ImagePicker.launchImageLibrary(options, response => {
+        ImagePicker.launchImageLibrary(options, response => {
           if (response.uri) {
             this.setState({ picture: response })
           }
         })
-        // const data = new FormData()
-        // const { picture } = this.state
-        // data.append('picture', {
-        //     name: picture.fileName,
-        //     type: picture.type,
-        //     uri: Platform.OS === 'android' ? picture.uri : picture.uri.replace('file://', '')
-        // })
-
-        // const result = this.props.uploadImage(data, this.props.auth.token)
-        // if (result) {
-        //     this.props.getProfile(this.props.auth.token)
-        // }
       }
     
     FormData = (picture, body) => {
@@ -87,24 +77,26 @@ class ProfileEdit extends Component {
             uri: Platform.OS === 'android' ? picture.uri : picture.uri.replace('file://', '')
         })
 
-        // Object.keys(body).forEach(key => {
-        //     data.append(key, body[key])
-        // })
+        Object.keys(body).forEach(key => {
+            data.append(key, body[key])
+        })
         
         return data
     }
 
-    uploadPhoto =  () => {
-        const result = this.props.uploadImage(this.FormData(this.state.picture), this.props.auth.token)
-        if (result) {
-            this.props.getProfile(this.props.auth.token)
-        }
+    uploadPhoto = async () => {
+        await this.props.uploadImage(this.FormData(this.state.picture), this.props.auth.token)
+        this.props.getProfile(this.props.auth.token)
     }
 
     componentDidUpdate(){
         console.log(this.state.birthday)
         console.log(this.state.name)
         console.log(this.state.picture)
+    }
+
+    logout = () => {
+        this.props.logout()
     }
 
     render() {
@@ -166,6 +158,11 @@ class ProfileEdit extends Component {
                         <Text>Delivery status change</Text>
                         <Switch value={this.state.switch3} />
                     </View>
+                    <TouchableOpacity onPress={this.logout}>
+                    <View style={style.switch}>
+                        <Text>Logout</Text>
+                    </View>
+                    </TouchableOpacity>
                 </View>
             </View>
             </ScrollView>
@@ -181,7 +178,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     getProfile: profile.getProfile,
     editProfile: profile.editProfile,
-    uploadImage: profile.uploadImage
+    uploadImage: profile.uploadImage,
+    logout: auth.logout
   }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileEdit);
