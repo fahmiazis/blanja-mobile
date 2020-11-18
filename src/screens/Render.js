@@ -1,15 +1,13 @@
 import React from 'react'
 import { Text, View, Image, StyleSheet, TouchableOpacity } from 'react-native'
+import {useNavigation} from '@react-navigation/native'
 import { Card } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-export default function RenderItem({product}) {
-    const gotoDetail = id => {
-        console.log(id)
-        this.props.navigation.navigate('Detail', {id})
-    }    
+export default function Render({product}) {
+   const navigation = useNavigation()
     return (
-        <TouchableOpacity key={product.id} onPress={() => gotoDetail(product.id) }>
+        <TouchableOpacity style={style.parent} key={product.id} onPress={() => navigation.navigate('Detail', {id: product.id})}>
         <Card style={style.bodyCard}>
             <Image style={style.imgCard} source={{uri: `http://54.147.40.208:7070/${product.url}`}} />
             <View style={style.itemCard}>

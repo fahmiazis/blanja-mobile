@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Text, View, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native'
 import { Button, Left, List, ListItem, Right, Footer, Card } from 'native-base'
 import DropDown from  'react-native-dropdown-picker'
-import Splash from 'react-native-splash-screen'
 
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import Icon2 from 'react-native-vector-icons/Ionicons'
@@ -11,7 +10,6 @@ import {connect} from 'react-redux'
 
 import product from '../redux/actions/product'
 import cart from '../redux/actions/cart'
-import checkout from '../redux/actions/checkout'
 
 class DetailProduct extends Component {
     state = {
@@ -23,10 +21,9 @@ class DetailProduct extends Component {
 
     componentDidMount() {
         const {id} = this.props.route.params
-        this.setState({product: id})
+        this.setState({id: id})
         this.props.detailItem(id)
         this.props.getItem()
-        Splash.hide()
     }
     gotoDetail = id => {
         this.props.navigation.navigate('Detail', {id})
@@ -39,12 +36,6 @@ class DetailProduct extends Component {
             product
         }
         this.props.addCart(this.props.auth.token, data)
-        this.props.getCart(this.props.auth.token)
-        this.props.getCheckout(this.props.auth.token)
-    }
-
-    componentDidUpdate(){
-        console.log(typeof this.state.id)
     }
 
   render() {
@@ -348,9 +339,7 @@ const style = StyleSheet.create({
   const mapDispatchToProps = {
     getItem: product.getItem,
     detailItem: product.detailItem,
-    addCart: cart.addCart,
-    getCart: cart.getCart,
-    getCheckout: checkout.getCheckout,
+    addCart: cart.addCart
   }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DetailProduct)

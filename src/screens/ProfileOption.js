@@ -13,6 +13,10 @@ class ProfileOptions extends Component {
         this.props.getProfile(this.props.auth.token)
     }
 
+    logout = () => {
+        this.props.logout()
+    }
+
     render() {
         const {isLoading, data, isError, alertMsg} = this.props.profile
         return (
@@ -47,7 +51,7 @@ class ProfileOptions extends Component {
                         <Text style={style.subtitle}>Shipping addresses</Text>
                         <Text style={style.desc}>3 addresses</Text>
                     </View>
-                    <Icon style={style.iconAddress} name="keyboard-arrow-right"  size={30} />
+                    <Icon style={style.icon} name="keyboard-arrow-right"  size={30} />
                 </View>
                 </TouchableOpacity>
                 
@@ -57,7 +61,14 @@ class ProfileOptions extends Component {
                         <Text style={style.subtitle}>Settings</Text>
                         <Text style={style.desc}>Notifications, password</Text>
                     </View>
-                    <Icon style={style.iconSetting} name="keyboard-arrow-right"  size={30} />
+                    <Icon style={style.icon} name="keyboard-arrow-right"  size={30} />
+                </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={this.logout}>
+                <View style={style.card}> 
+                    <View>
+                        <Text style={style.subtitle}>Logout</Text>
+                    </View>
                 </View>
                 </TouchableOpacity>
             </View>
@@ -71,7 +82,8 @@ const mapStateToProps = state => ({
   })
   
 const mapDispatchToProps = {
-    getProfile: profile.getProfile
+    getProfile: profile.getProfile,
+    logout: auth.logout
   }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileOptions);
@@ -120,20 +132,12 @@ const style = StyleSheet.create({
         paddingHorizontal: "5%",
         width: "100%",
         elevation: 2,
+        justifyContent: "space-between"
     },
     desc: {
         color: "rgb(164,164,164)"
     },
     icon: {
         color: "rgb(164,164,164)",
-        marginLeft: "60%"
     },
-    iconAddress: {
-        color: "rgb(164,164,164)",
-        marginLeft: "52%"
-    },
-    iconSetting: {
-        color: "rgb(164,164,164)",
-        marginLeft: "58%"
-    }
 })

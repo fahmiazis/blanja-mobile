@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
 import {ListItem, Left, Button, Header, Right, Body, Title} from 'native-base'
 
 
@@ -8,11 +8,6 @@ class Category extends Component {
     render() {
         return (
             <View style={style.parent}>
-                <Header style={style.header}>
-                    <Left></Left>
-                    <Body><Title style={style.title}>Categories</Title></Body>
-                    <Right />
-                </Header>
                 <View style={style.head}>
                     <Button style={style.btn} large block onPress={()=> this.props.navigation.navigate('Catalog')}>
                         <Text style={style.textbtn}>VIEW ALL ITEMS</Text>
@@ -20,31 +15,13 @@ class Category extends Component {
                     <Text style={style.textCat}>Choose category</Text>
                 </View>
                 <View>
-                    <ListItem>
-                        <Left>
-                            <Text style={style.textList}>T-shirt</Text>
-                        </Left>
-                    </ListItem>
-                    <ListItem>
-                        <Left>
-                            <Text style={style.textList}>Jacket</Text>
-                        </Left>
-                    </ListItem>
-                    <ListItem>
-                        <Left>
-                            <Text style={style.textList}>Pants</Text>
-                        </Left>
-                    </ListItem>
-                    <ListItem>
-                        <Left>
-                            <Text style={style.textList}>Short</Text>
-                        </Left>
-                    </ListItem>
-                    <ListItem>
-                        <Left>
-                            <Text style={style.textList}>Shoes</Text>
-                        </Left>
-                    </ListItem>
+                    <TouchableOpacity>
+                        <ListItem>
+                            <Left>
+                                <Text style={style.textList}>T-shirt</Text>
+                            </Left>
+                        </ListItem>
+                    </TouchableOpacity>
                 </View>
             </View>
         )

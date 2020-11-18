@@ -7,71 +7,87 @@ import { default as axios} from 'axios'
 import { Card } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
 import {connect} from 'react-redux'
-
+import Render from './Render'
 import product from '../redux/actions/product'
 
 import head1 from '../assets/img/head1.png'
 
 class Home extends Component {
     state = {
-        data: {}
+        dataFlat: {},
+        dataPopular: {}
     }
 
-    componentDidMount(){
-        this.props.getItem()
-        const { data } = this.props.product
-        if (data.length > 0) {
-            this.setState({data: data})
-        }
-    }   
+    async componentDidMount() {
+        await this.props.getItem()
+        await this.props.getItemPopular()
+        const { data, dataPopular } = this.props.product
+        this.setState({dataFlat: data, dataPopular: dataPopular})
+    }
     gotoDetail = id => {
         console.log(id)
         this.props.navigation.navigate('Detail', {id})
     }
 
     componentDidUpdate(){
-        console.log(this.state.data)
+        console.log(this.state.dataFlat)
+        console.log(this.state.dataFlat.data)
     }
 
-    RenderItem = ({product}) => {
-        <TouchableOpacity key={product.id} onPress={() => this.gotoDetail(product.id) }>
-        <Card style={style.bodyCard}>
-                <Image style={style.imgCard} source={{uri: `http://54.147.40.208:7070/${product.url}`}} />
-                <View style={style.itemCard}>
-                <View style={style.card}> 
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Text style={style.rateNumber}>(10)</Text>
-                </View>
-                    <Text style={style.textStore}>Blanja cloth</Text>
-                    <Text>{product.name}</Text>
-                    <Text>Rp{product.price}, -</Text>
-                </View>
-            </Card>
-        </TouchableOpacity>
-    }
+    // RenderItem = ({product}) => {
+    //     <TouchableOpacity key={product.id} onPress={() => this.gotoDetail(product.id) }>
+    //     <Card style={style.bodyCard}>
+    //             <Image style={style.imgCard} source={{uri: `http://54.147.40.208:7070/${product.url}`}} />
+    //             <View style={style.itemCard}>
+    //             <View style={style.card}> 
+    //                 <Icon name="star-outline" size={15} style={style.rate} />
+    //                 <Icon name="star-outline" size={15} style={style.rate} />
+    //                 <Icon name="star-outline" size={15} style={style.rate} />
+    //                 <Icon name="star-outline" size={15} style={style.rate} />
+    //                 <Icon name="star-outline" size={15} style={style.rate} />
+    //                 <Text style={style.rateNumber}>(10)</Text>
+    //             </View>
+    //                 <Text style={style.textStore}>Blanja cloth</Text>
+    //                 <Text>{product.name}</Text>
+    //                 <Text>Rp{product.price}, -</Text>
+    //             </View>
+    //         </Card>
+    //     </TouchableOpacity>
+    // }
 
     nextPage = async () => {
-        const {data} = this.props.product
-        const data1 = data
-        const { nextLink } = data1.pageInfo
+        const {dataFlat} = this.state
+        const { nextLink } = dataFlat.pageInfo
         if (nextLink) {
             const res = await axios.get(nextLink)
             const {data} = res.data
             const newData = {
-                ...data1,
-                result: [...data1.data, ...data],
+                ...dataFlat,
+                data: [...dataFlat.data, ...data],
                 pageInfo: res.data.pageInfo,
             }
-            this.setState({data: newData})
+            this.setState({dataFlat: newData})
+        }
+    }
+
+    nextPagePop = async () => {
+        const {dataPopular} = this.state
+        const { nextLink } = dataPopular.pageInfo
+        if (nextLink) {
+            const res = await axios.get(nextLink)
+            const {data} = res.data
+            const newData = {
+                ...dataPopular,
+                data: [...dataPopular.data, ...data],
+                pageInfo: res.data.pageInfo,
+            }
+            this.setState({dataPopular: newData})
         }
     }
 
   render() {
     const {isLoading, data, isError, alertMsg} = this.props.product
+    const {dataFlat, dataPopular} = this.state
     return (
         <>
         <SafeAreaView>
@@ -90,65 +106,24 @@ class Home extends Component {
                     <Text style={style.textNew}>New</Text>
                     <Text style={style.textSub} secondary>You've never seen it before</Text>
                 </View>
-            
-            {!isLoading && !isError && data.length!==0 && data.data.map(item => {
-                return(
-            <ScrollView horizontal>
-            <TouchableOpacity key={item.id} onPress={() => this.gotoDetail(item.id) }>
-            <Card style={style.bodyCard}>
-                <Image style={style.imgCard} source={{uri: `http://54.147.40.208:7070/${item.url}`}} />
-                <View style={style.itemCard}>
-                <View style={style.card}> 
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Text style={style.rateNumber}>(10)</Text>
-                </View>
-                    <Text style={style.textStore}>Blanja cloth</Text>
-                    <Text>{item.name}</Text>
-                    <Text>Rp{item.price},-</Text>
-                </View>
-            </Card>
-            </TouchableOpacity>
-            {/* <View style={style.parent}>
-            <FlatList
-            data = {this.state.data}
-            onEndReached={this.nextPage}
-            onEndReachedThreshold={0.5}
-            renderItem = {({item}) => <this.RenderItem product={item} /> }
-            />
-            </View> */}
-            </ScrollView>
-            )})}
+                <FlatList
+                horizontal={true}
+                data = {Object.keys(dataFlat).length > 0 && dataFlat.data}
+                onEndReached={this.nextPage}
+                onEndReachedThreshold={0.5}
+                renderItem = {({item}) => <Render product={item} /> }
+                />
             <View>
                 <Text style={style.textNew}>Popular</Text>
                 <Text style={style.textSub} secondary>You've never seen it before</Text>  
             </View>
-            <ScrollView horizontal>
-            {!isLoading && !isError && data.length!==0 && data.data.map(item => {
-                return(
-            <TouchableOpacity key={item.id} onPress={() => this.gotoDetail(item.id) }>
-            <Card style={style.bodyCard}>
-                <Image style={style.imgCard} source={{uri: `http://54.147.40.208:7070/${item.url}`}} />
-                <View style={style.itemCard}>
-                <View style={style.card}> 
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Icon name="star-outline" size={15} style={style.rate} />
-                    <Text style={style.rateNumber}>(10)</Text>
-                </View>
-                    <Text style={style.textStore}>Blanja cloth</Text>
-                    <Text>{item.name}</Text>
-                    <Text>Rp{item.price},-</Text>
-                </View>
-            </Card>
-            </TouchableOpacity>
-            )})}
-            </ScrollView>
+            <FlatList
+                horizontal={true}
+                data = {Object.keys(dataPopular).length > 0 && dataPopular.data}
+                onEndReached={this.nextPagePop}
+                onEndReachedThreshold={0.5}
+                renderItem = {({item}) => <Render product={item} /> }
+                />
                 </View>
             </View>
         </ScrollView>
@@ -243,7 +218,8 @@ const mapStateToProps = state => ({
   })
   
   const mapDispatchToProps = {
-    getItem: product.getItem
+    getItem: product.getItem,
+    getItemPopular: product.getItemPopular,
   }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home)

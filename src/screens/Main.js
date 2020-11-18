@@ -17,6 +17,7 @@ import ForgotPassword from './ForgotPassword'
 import Home from './HomeV2'
 import Cart from './Cart'
 import Detail from './DetailProduct'
+import DetailV2 from './DetailProductV2'
 import ProfileOption from './ProfileOption'
 import ProfileEdit from './ProfileEdit'
 import ProfileOrder from './ProfileOrder'
@@ -24,7 +25,23 @@ import Checkout from './Checkout'
 import Category from './Category'
 import Catalog from './Catalog'
 import ProfileAddress from './ProfileAddress'
+import Address from './Address'
 import Success from './Success'
+
+const HomeStack = () => {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen 
+            options={{
+                headerShown: false,
+                headerStyle: {backgroundColor: "", elevation: 0}
+            }}
+            name="Home"
+            component={Home}
+            />
+        </Stack.Navigator>
+    );
+};
 
 const CartStack = () => {
     return (
@@ -59,21 +76,6 @@ const CategoryStack = () => {
             }}
             name="Catalog"
             component={Catalog}
-            />
-        </Stack.Navigator>
-    );
-};
-
-const HomeStack = () => {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen 
-            options={{
-                title: "Home",
-                headerStyle: {backgroundColor: "", elevation: 0}
-            }}
-            name="Home"
-            component={Home}
             />
         </Stack.Navigator>
     );
@@ -183,10 +185,13 @@ class Main extends Component {
                         options={{headerTransparent: true, title: ""}}
                         />
                         <Stack.Screen name='Detail' component={Detail} options={{headerShown: false}} />
+                        <Stack.Screen name='DetailV2' component={DetailV2} options={{headerShown: false}} />
                         <Stack.Screen name='ProfileEdit' component={ProfileEdit} options={{headerShown: false}} />
                         <Stack.Screen name='Checkout' component={Checkout} options={{title: "Checkout"}} />
-                        <Stack.Screen name='ProfileAddress' component={ProfileAddress} options={{headerShown: false}} />
+                        <Stack.Screen name='ProfileAddress' component={ProfileAddress} options={{title: "Shipping Address"}} />
+                        <Stack.Screen name='Address' component={Address} />
                         <Stack.Screen name='Success' component={Success} options={{headerShown: false}} />
+                        {/* <Stack.Screen name='Render' component={Render} options={{headerShown: false}} /> */}
                     </Stack.Navigator>
                     )}
             </NavigationContainer>

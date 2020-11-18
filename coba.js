@@ -1,3 +1,10 @@
-const data = [{ a: 'kingkong', b: "cincong", c: "lontong"}]
+const data = { a: 'kingkong', b: "cincong", c: "lontong"}
 
-console.log(data[0].a)
+const {a, b, c} = data
+
+const d = {
+    g: a + ', ' + b,
+    a
+}
+
+console.log(d)

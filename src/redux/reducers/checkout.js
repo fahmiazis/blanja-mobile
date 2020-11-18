@@ -1,55 +1,66 @@
-const productState = {
+const checkoutState = {
     isLoading: false,
     isError: false,
     alertMsg: '',
-    address: []
+    isSuccess: false,
+    order: 0,
+    summary: 0,
+    delivery: 0,
+    address: [],
+    data: []
 };
 
-export default (state=productState, action) => {
+export default (state=checkoutState, action) => {
         switch(action.type){
-            case 'GET_ADDRESS_PENDING': {
+            case 'GET_CHECKOUT_PENDING': {
                 return {
                     ...state,
                     isLoading: true,
                     alertMsg: 'Waiting For data'
                 };
             }
-            case 'GET_ADDRESS_FULFILLED': {
+            case 'GET_CHECKOUT_FULFILLED': {
                 return {
                     ...state,
                     isError: false,
                     isLoading: false,
-                    alertMsg: 'Success get address',
-                    address: action.payload.data.data,
+                    alertMsg: 'Success get checkout',
+                    data: action.payload.data,
+                    delivery: action.payload.data.delivery,
+                    order: action.payload.data.order,
+                    summary: action.payload.data.summary,
+                    address: action.payload.data.address,
+                    isSuccess: true
                 };
             }
-            case 'GET_ADDRESS_REJECTED': {
+            case 'GET_CHECKOUT_REJECTED': {
                 return {
                     ...state,
                     isError: true,
-                    alertMsg: 'Address not found'
+                    alertMsg: 'Data not found'
                 };
             }
-            case 'ADD_ADDRESS_PENDING': {
+            case 'BUY_PENDING': {
                 return {
                     ...state,
                     isLoading: true,
-                    alertMsg: 'Waiting sending data'
+                    alertMsg: 'Waiting For Buy'
                 };
             }
-            case 'ADD_ADDRESS_FULFILLED': {
+            case 'BUY_FULFILLED': {
                 return {
                     ...state,
                     isError: false,
                     isLoading: false,
-                    alertMsg: 'Success add address',
+                    alertMsg: 'Buy Success',
+                    isSuccess: true
                 };
             }
-            case 'ADD_ADDRESS_REJECTED': {
+            case 'BUY_REJECTED': {
                 return {
                     ...state,
                     isError: true,
-                    alertMsg: 'add address failed'
+                    alertMsg: 'Buy Data Failed'
                 };
             }
             default: {

@@ -77,26 +77,24 @@ class ProfileEdit extends Component {
             uri: Platform.OS === 'android' ? picture.uri : picture.uri.replace('file://', '')
         })
 
-        Object.keys(body).forEach(key => {
-            data.append(key, body[key])
-        })
+        if(body){  
+            Object.keys(body).forEach(key => {
+                data.append(key, body[key])
+            })
+        }
         
         return data
     }
 
-    uploadPhoto = async () => {
-        await this.props.uploadImage(this.FormData(this.state.picture), this.props.auth.token)
-        this.props.getProfile(this.props.auth.token)
+    uploadPhoto = () => {
+        this.props.uploadImage(this.FormData(this.state.picture), this.props.auth.token)
     }
 
     componentDidUpdate(){
-        console.log(this.state.birthday)
-        console.log(this.state.name)
-        console.log(this.state.picture)
-    }
-
-    logout = () => {
-        this.props.logout()
+        const { isSuccessImage } = this.props.profile
+        if(isSuccessImage){
+            this.props.getProfile(this.props.auth.token)
+        }
     }
 
     render() {
@@ -158,11 +156,6 @@ class ProfileEdit extends Component {
                         <Text>Delivery status change</Text>
                         <Switch value={this.state.switch3} />
                     </View>
-                    <TouchableOpacity onPress={this.logout}>
-                    <View style={style.switch}>
-                        <Text>Logout</Text>
-                    </View>
-                    </TouchableOpacity>
                 </View>
             </View>
             </ScrollView>
@@ -179,7 +172,6 @@ const mapDispatchToProps = {
     getProfile: profile.getProfile,
     editProfile: profile.editProfile,
     uploadImage: profile.uploadImage,
-    logout: auth.logout
   }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileEdit);

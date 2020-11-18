@@ -13,5 +13,9 @@ export default {
     uploadImage: (data, token) => ({
         type: 'UPLOAD_IMAGE',
         payload: http(token).patch(`/profile/customer/img`, data)
+    }),
+    getHistory: (token) => ({
+        type: 'GET_HISTORY',
+        payload: http(token).get(`/profile/history`)
     })
 }

@@ -6,7 +6,10 @@ import master from '../assets/img/master.png'
 import gopay from '../assets/img/gopay.png'
 import pos from '../assets/img/pos.png'
 
-export default class Checkout extends Component {
+import {connect} from 'react-redux'
+import checkout from '../redux/actions/checkout'
+
+class Checkout extends Component {
     state = {
         checked: false,
         color: "rgb(164,164,164)",
@@ -14,21 +17,42 @@ export default class Checkout extends Component {
         color2: "rgb(164,164,164)",
         checked3: false,
         color3: "rgb(164,164,164)",
+        order: 0,
+        delivery: 0,
+        summary: 0,
+        address: null
     }
+
+    componentDidMount(){
+        this.props.getCheckout(this.props.auth.token)
+        const {address, delivery, order, summary} = this.props.checkout
+        this.setState({order: order, delivery: delivery, summary: summary, address: address})
+    }
+
+    buy = async () => {
+        await this.props.buy(this.props.auth.token)
+        this.props.navigation.navigate('Success')
+    }
+
     render() {
+        const {address, delivery, order, summary} = this.state
+        const {alertMsg} = this.props.checkout
         return (
             <View style={style.parent1}>
                 <ScrollView>
             <View style={style.parent}>
                 <Text style={style.textAddress}>Shipping Address</Text>
+                {address !== null && address.map(item => {
+                    return (
                 <View style={style.bodyAddress}>
                     <View style={style.nameAddress}>
-                        <Text style={style.name}>Jane Doe</Text>
+                        <Text style={style.name}>{item.recipient}</Text>
                         <Text style={style.change}>Change</Text>
                     </View>
-                    <Text style={style.street} name="street">3 Newbridge Court</Text>
-                    <Text style={style.districk} name="districk">Chino hils, CA 91709, United States</Text>
+                    <Text style={style.street} name="street">{item.address}</Text>
+                    <Text style={style.districk} name="districk">{item.city},{item.postal_code}</Text>
                 </View>
+                )})}
                 <View>
                     <Text style={style.textAddress}>Payment</Text>
                     <View style={style.bodypayment}>
@@ -75,17 +99,17 @@ export default class Checkout extends Component {
             <Footer style={style.footer}>
                     <View style={style.cardHead2}>
                         <Text style={style.textColor2}>Order:</Text>
-                        <Text style={style.price1}>Rp50.000</Text>
+                        <Text style={style.price1}>Rp{alertMsg === 'Data not found' ? 0 : order}</Text>
                     </View>
                     <View style={style.cardHead2}>
                         <Text style={style.textColor2}>Delivery:</Text>
-                        <Text style={style.price1}>Rp15.000</Text>
+                        <Text style={style.price1}>Rp{alertMsg === 'Data not found' ? 0 : delivery}</Text>
                     </View>
                     <View style={style.cardHead2}>
                         <Text style={style.textColor2}>Summary:</Text>
-                        <Text style={style.price1}>Rp65.000</Text>
+                        <Text style={style.price1}>Rp{alertMsg === 'Data not found' ? 0 : summary}</Text>
                     </View>
-                    <Button block style={style.btnFooter} large onPress={() => this.props.navigation.navigate('Success')}>
+                    <Button block style={style.btnFooter} large onPress={() => this.buy()}>
                         <Text style={style.textFooter}>
                         SUBMIT ORDER
                         </Text>
@@ -95,6 +119,18 @@ export default class Checkout extends Component {
         )
     }
 }
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+    checkout: state.checkout
+  })
+  
+  const mapDispatchToProps = {
+    getCheckout: checkout.getCheckout,
+    buy: checkout.buy
+  }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Checkout)
 
 
 const style = StyleSheet.create({
@@ -167,9 +203,10 @@ const style = StyleSheet.create({
         marginRight: "5%"
     },
     footer: {
-        // width: "100%",
         backgroundColor: "rgb(255,255,255)",
         borderRadius: 20,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius:0,
         padding: "2%",
         height: 230,
         flexDirection: "column"

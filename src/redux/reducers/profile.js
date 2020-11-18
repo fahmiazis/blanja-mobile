@@ -5,7 +5,8 @@ const authState = {
     isSuccessGet: false,
     isSuccessUpdate: false,
     isSuccessImage: false,
-    data: []
+    data: [],
+    history: []
 };
 
 export default (state=authState, action) => {
@@ -34,6 +35,29 @@ export default (state=authState, action) => {
                     ...state,
                     isError: true,
                     alertMsg: 'Data not found'
+                };
+            }
+            case 'GET_HISTORY_PENDING': {
+                return {
+                    ...state,
+                    isLoading: true,
+                    alertMsg: 'Waiting For data'
+                };
+            }
+            case 'GET_HISTORY_FULFILLED': {
+                return {
+                    ...state,
+                    isError: false,
+                    isLoading: false,
+                    history: action.payload.data.data,
+                    alertMsg: 'get history success'
+                };
+            }
+            case 'GET_HISTORY_REJECTED': {
+                return {
+                    ...state,
+                    isError: true,
+                    alertMsg: 'get history failed'
                 };
             }
             case 'EDIT_PROFILE_PENDING': {

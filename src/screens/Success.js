@@ -4,7 +4,17 @@ import { Button } from 'native-base'
 
 import bag from '../assets/img/bags.png'
 
-export default class Success extends Component {
+import {connect} from 'react-redux'
+import checkout from '../redux/actions/checkout'
+import cart from '../redux/actions/cart'
+
+class Success extends Component {
+    
+    componentDidMount(){
+        this.props.getCart(this.props.auth.token)
+        this.props.getCheckout(this.props.auth.token)
+    }
+    
     render() {
         return (
             <View style={style.parent}>
@@ -21,6 +31,18 @@ export default class Success extends Component {
         )
     }
 }
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+    checkout: state.checkout
+  })
+  
+  const mapDispatchToProps = {
+    getCheckout: checkout.getCheckout,
+    getCart: cart.getCart
+  }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Success)
 
 const style = StyleSheet.create({
     parent: {

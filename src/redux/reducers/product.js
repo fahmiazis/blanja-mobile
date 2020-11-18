@@ -3,6 +3,7 @@ const productState = {
     isError: false,
     alertMsg: '',
     data: [],
+    dataPopular: [],
     detail: {}
 };
 
@@ -25,6 +26,29 @@ export default (state=productState, action) => {
                 };
             }
             case 'GET_PRODUCT_REJECTED': {
+                return {
+                    ...state,
+                    isError: true,
+                    alertMsg: 'Data not found'
+                };
+            }
+            case 'GET_POPULAR_PENDING': {
+                return {
+                    ...state,
+                    isLoading: true,
+                    alertMsg: 'Waiting For data'
+                };
+            }
+            case 'GET_POPULAR_FULFILLED': {
+                return {
+                    ...state,
+                    isError: false,
+                    isLoading: false,
+                    alertMsg: 'Success get item',
+                    dataPopular: action.payload.data,
+                };
+            }
+            case 'GET_POPULAR_REJECTED': {
                 return {
                     ...state,
                     isError: true,
