@@ -15,12 +15,10 @@ class Category extends Component {
                     <Text style={style.textCat}>Choose category</Text>
                 </View>
                 <View>
-                    <TouchableOpacity>
-                        <ListItem>
-                            <Left>
-                                <Text style={style.textList}>T-shirt</Text>
-                            </Left>
-                        </ListItem>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Catalog')}>
+                        <View>
+                            <Text style={style.textList}>T-shirt</Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
             </View>

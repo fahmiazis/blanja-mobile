@@ -1,24 +1,47 @@
 import React, { Component } from 'react'
-import { Text, View, Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
+import { Text, View, Image, ScrollView, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
 import { Body, Card, CardItem, Header, Left, Right, Title } from 'native-base'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import {connect} from 'react-redux'
-
+import { default as axios} from 'axios'
 import product from '../redux/actions/product'
+import RenderCatalog from './RenderCatalog'
 
 class Catalog extends Component {
 
-    componentDidMount(){
-        this.props.getItem()
-    } 
-    
+    state = {
+        dataFlat: {},
+    }
+
+    async componentDidMount() {
+        await this.props.getItem()
+        const { data } = this.props.product
+        this.setState({dataFlat: data})
+    }
+
     gotoDetail = id => {
+        console.log(id)
         this.props.navigation.navigate('Detail', {id})
+    }
+
+    nextPage = async () => {
+        const {dataFlat} = this.state
+        const { nextLink } = dataFlat.pageInfo
+        if (nextLink) {
+            const res = await axios.get(nextLink)
+            const {data} = res.data
+            const newData = {
+                ...dataFlat,
+                data: [...dataFlat.data, ...data],
+                pageInfo: res.data.pageInfo,
+            }
+            this.setState({dataFlat: newData})
+        }
     }
     
     render() {
-        const {isLoading, data, isError, alertMsg} = this.props.product
+        const {dataFlat} = this.state
         return (
             <>
             <View style={style.parent}>
@@ -45,26 +68,12 @@ class Catalog extends Component {
                         </Header>
                     </View>
                     <View>
-                    <ScrollView>
-                    {!isLoading && !isError && data.length!==0 && data.map(item => {
-                    return(
-                    <TouchableOpacity onPress={() => this.gotoDetail(item.id) }>
-                    <Card style={style.bodyCard}>
-                        <CardItem>
-                            <View style={style.card}>
-                                <View style={style.sideCard}>
-                                    <Text style={style.textName} name="name">{item.name}</Text>
-                                    <Text style={style.textStore} name="store">Blanja cloth</Text>
-                                    <Text style={style.textStore} name="rating"></Text>
-                                    <Text name="price">Rp{item.price},-</Text>
-                                </View>
-                                <Image style={style.img} source={{uri: `http://54.147.40.208:7070/${item.url}`}}/>
-                            </View>
-                        </CardItem>
-                    </Card>
-                    </TouchableOpacity>
-                    )})}
-                    </ScrollView>
+                    <FlatList
+                        data = {Object.keys(dataFlat).length > 0 && dataFlat.data}
+                        onEndReached={this.nextPage}
+                        onEndReachedThreshold={0.5}
+                        renderItem = {({item}) => <RenderCatalog product={item} /> }
+                        />
                 </View>
             </View>
             </>
