@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-// import {TouchableOpacity} from 'react-native'
+import {TouchableOpacity} from 'react-native'
 import {NavigationContainer} from '@react-navigation/native'
 import {createStackNavigator} from '@react-navigation/stack'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
@@ -27,6 +27,14 @@ import Catalog from './Catalog'
 import ProfileAddress from './ProfileAddress'
 import Address from './Address'
 import Success from './Success'
+
+const SearchButton = () => {
+    return(
+        <TouchableOpacity>
+            <Icon name="magnify" size={30} />
+        </TouchableOpacity>
+    )
+}
 
 const HomeStack = () => {
     return (
@@ -64,14 +72,16 @@ const CategoryStack = () => {
             <Stack.Screen 
             options={{
                 title: "Categories",
-                headerStyle: {backgroundColor: "", elevation: 0}
+                headerStyle: {backgroundColor: "", elevation: 0},
+                headerRight: SearchButton
             }}
             name="Category"
             component={Category}
             />
             <Stack.Screen 
             options={{
-                title: "Catalog",
+                title: "",
+                headerRight: SearchButton,
                 headerStyle: {backgroundColor: "", elevation: 0}
             }}
             name="Catalog"

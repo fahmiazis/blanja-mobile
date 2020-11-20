@@ -12,6 +12,8 @@ class Catalog extends Component {
 
     state = {
         dataFlat: {},
+        searchData: '',
+        sortData: ''
     }
 
     async componentDidMount() {
@@ -39,6 +41,25 @@ class Catalog extends Component {
             this.setState({dataFlat: newData})
         }
     }
+
+    search = () => {
+        const { searchData } = this.state
+        this.props.searchProduct(searchData)
+        const { search } = this.props.product
+        this.setState({dataFlat: search})
+    }
+
+    sort = () => {
+        const { sortData } = this.state
+        this.props.sortProduct(sortData)
+        const { sort } = this.props.product
+        this.setState({dataFlat: sort})
+    }
+
+    componentDidUpdate(){
+        const {dataFlat} = this.state
+        console.log(dataFlat)
+    }
     
     render() {
         const {dataFlat} = this.state
@@ -53,14 +74,14 @@ class Catalog extends Component {
                             </Left>
                             <View style={style.icon}>
                                 <Icon name="apps-sharp" size={30} />
-                                <View style={style.subIcon}>
+                                <TouchableOpacity style={style.subIcon} onPress={() => {return (this.setState({sortData: 'asc'}), this.sort())}}>
                                     <Text>Price lowest to high</Text>
                                     <Icon name="swap-vertical" size={30} />
-                                </View> 
-                                <View style={style.iconFilter}>
-                                        <Text>filters</Text>
-                                        <Icon name="filter" size={30} />
-                                </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={style.iconFilter}>
+                                    <Text>filters</Text>
+                                    <Icon name="filter" size={30} />
+                                </TouchableOpacity>
                             </View>
                         </View>
                         <Body>
@@ -148,7 +169,9 @@ const mapStateToProps = state => ({
   })
   
   const mapDispatchToProps = {
-    getItem: product.getItem
+    getItem: product.getItem,
+    searchProduct: product.searchProduct,
+    sortProduct: product.sortProduct
   }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Catalog);

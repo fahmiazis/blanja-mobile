@@ -13,5 +13,13 @@ export default {
     detailItem: (id) => ({
         type: 'DETAIL_ITEM',
         payload: http().get(`/home/detail/${id}`)
+    }),
+    searchProduct: (data) => ({
+        type: 'SEARCH',
+        payload: http().get(`/home/new?search[name]=${data}`)
+    }),
+    sortProduct: (data) => ({
+        type: 'SORT',
+        payload: http().get(`/home/new?sort[price]=${data}`),
     })
 }
